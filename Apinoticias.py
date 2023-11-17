@@ -4,38 +4,42 @@
  Description:
  Api Noticias
 '''
-
 import requests
 
-base_url = "https://newsapi.org/v2/everything?"
-api_key = "90012c082ffb4a82848b1d7448c54fd5"
+# URL base de la API de noticias y clave de API
+main_api = "https://newsapi.org/v2/everything?"
+key = "90012c082ffb4a82848b1d7448c54fd5"
 
 while True:
+    # Solicitar parámetros al usuario
     keyword = input("Introduce una palabra clave (por ejemplo, Apple): ")
-    
-    while True:
-        from_date = input("Introduce la fecha de inicio (en el formato YYYY-MM-DD): ")
-        if len(from_date) == 10 and from_date.count('-') == 2:
-            break
-        else:
-            print("Fecha no válida. Introduce la fecha en el formato correcto.")
+    from_date = input("Introduce la fecha de inicio (en el formato YYYY-MM-DD): ")
 
-    url = f"{base_url}q={keyword}&from={from_date}&sortBy=popularity&apiKey={api_key}"
+    # Construir la URL con los parámetros proporcionados
+    url = f"{main_api}q={keyword}&from={from_date}&sortBy=popularity&apiKey={key}"
 
+    # Imprimir la URL construida para referencia
     print("URL: " + url)
     print("=========================================")
 
-    response = requests.get(url).json()
+    # Realizar la solicitud a la API y obtener la respuesta en formato JSON
+    json_data = requests.get(url).json()
 
-    if response["status"] == "ok":
-        print("Total de resultados:", response["totalResults"])
+    # Verificar si la solicitud fue exitosa (status "ok")
+    if json_data["status"] == "ok":
+        # Imprimir el total de resultados encontrados por la búsqueda
+        print("Total de resultados:", json_data["totalResults"])
 
-        for idx, article in enumerate(response.get("articles", [])[:10]):
+        # Mostrar títulos de noticias y autores de los primeros 10 resultados
+        articles = json_data.get("articles", [])
+        for idx, article in enumerate(articles[:10]):  # Mostrar los primeros 10 títulos y sus autores
             print(f"\nTítulo {idx + 1}: {article['title']}")
-            print(f"Autor: {article['author']}")
+            print(f"Autor : {article['author']}")
     else:
-        print("Ha ocurrido un error:", response.get("message", "No se proporcionó un mensaje de error"))
+        # Manejar casos donde la solicitud no fue exitosa
+        print("Ha ocurrido un error")
 
+    # Preguntar al usuario si quiere continuar o salir del programa
     respuesta = input("¿Quieres continuar? (si/no): ")
     if respuesta.lower() != "si":
-        break
+        break  # Salir del bucle si la respuesta no es "si"
